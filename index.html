@@ -5,15 +5,63 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Video Streaming With Node</title>
+    <script>
+
+      function setFilm(name) {
+        fetch("http://localhost:8000/setFilm", {
+          method: 'POST', // Metodo della richiesta
+          headers: {
+            'Content-Type': 'application/json' // Indica il tipo di contenuto
+          },
+          body: JSON.stringify({selectedFilm: name}) // Converte l'oggetto in una stringa JSON
+        }).then(response => {
+          const videoNote = document.querySelector("video");
+          var timestamp = new Date().getTime();
+          videoNote.src = "/video?t=" +timestamp;
+          videoNote.load()
+
+          // Resetta il video
+          videoNote.currentTime = 0; // Riporta il video all'inizio
+          videoNote.pause(); // Ferma il video
+          videoNote.play(); // (opzionale) avvia la riproduzione del nuovo video
+        })
+
+
+      }
+
+     document.addEventListener('DOMContentLoaded', function() {
+       fetch("http://localhost:8000/films").then(response => {
+         if (!response.ok) {
+           throw new Error('Errore nella rete');
+         }
+         return response.json();
+       }).then(data => {
+           // Pulisci il contenuto precedente
+           const contenutoDiv = document.getElementById('filmList');
+           contenutoDiv.innerHTML = '';
+
+           // Itera attraverso la lista di oggetti e crea un elemento per ciascuno
+           data.forEach(item => {
+             const elemento = document.createElement('div');
+             elemento.classList.add('oggetto'); // Aggiungi una classe per lo stile se necessario
+             elemento.innerHTML = `
+                        <p onclick="setFilm('${item}')">${item}</p>  <!-- Modifica in base ai tuoi oggetti -->
+                        <!-- Modifica in base ai tuoi oggetti -->
+                    `;
+             contenutoDiv.appendChild(elemento);
+           });
+         })
+
+     })
+    </script>
     <style>
       body {
         max-width: 100%;
-        height: 100vh;
-        background-color: rgb(14, 14, 14);
         display: flex;
         margin: auto;
         align-items: center;
         justify-content: center;
+        flex-wrap: wrap;
       }
     </style>
   </head>
@@ -21,5 +69,6 @@
     <video id="videoPlayer" width="70%" controls autoplay muted="false">
       <source src="/video" type="video/mp4" />
     </video>
+    <div id="filmList"></div>
   </body>
 </html>

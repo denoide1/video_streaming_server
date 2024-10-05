@@ -6,10 +6,12 @@
     "scripts": {
         "start": "nodemon index.js"
     },
+    "type": "module",
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "express": "^4.17.1",
+        "@frameable/el": "^0.7.3",
+        "express": "^4.21.0",
         "nodemon": "^2.0.15"
     }
 }

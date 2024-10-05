@@ -1,9 +1,28 @@
-const express = require("express");
+import express from "express";
+import fs from "fs";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+
 const app = express();
-const fs = require("fs");
+app.use(express.json());
+
+const testFolder = '/Users/denoide/Documents/Films/';
+var currentFile = "Chris-Do.mp4"
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
+});
+
+app.post("/setFilm", function (req,res) {
+  currentFile = testFolder + req.body.selectedFilm
+  res.sendStatus(200)
+});
+
+app.get("/films", function (req, res) {
+    res.send(fs.readdirSync(testFolder))
 });
 
 app.get("/video", function (req, res) {
@@ -13,8 +32,8 @@ app.get("/video", function (req, res) {
     res.status(400).send("Requires Range header");
   }
 
-  const videoPath = "Chris-Do.mp4";
-  const videoSize = fs.statSync("Chris-Do.mp4").size;
+  const videoPath = currentFile;
+  const videoSize = fs.statSync(currentFile).size;
 
   const CHUNK_SIZE = 10 ** 6; // 1MB
   const start = Number(range.replace(/\D/g, ""));
